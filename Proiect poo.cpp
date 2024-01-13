@@ -192,6 +192,7 @@ private:
     int anFabricatie;
     float capacitateCilindrica;
     float pretAsigurareAuto; 
+    static float sumaTotalaAuto;
 
 public:
     AsigurareAuto(
@@ -204,6 +205,7 @@ public:
         this->anFabricatie = anFabricatie;
         this->capacitateCilindrica = capacitateCilindrica;
         this->pretAsigurareAuto = this->calculeazaPretAsigurareAuto();
+        this->sumaTotalaAuto = this->sumaTotalaAuto + this->pretAsigurareAuto;
     }
 
     AsigurareAuto(): Asigurare() {
@@ -221,6 +223,9 @@ public:
     }
     float getPretAsigurareAuto() {
         return this->pretAsigurareAuto;
+    }
+    float getSumaTotalaAuto() {
+        return this->sumaTotalaAuto;
     }
 
     //Sett-eri
@@ -265,7 +270,9 @@ public:
         cout << "        ASIGURARE AUTO " << endl;
         cout << " *" << "Dati an fabricatie: "; is >> this->anFabricatie;
         cout << " *" << "Dati capacitate cilindrica (litri): "; is >> this->capacitateCilindrica;
+        this->sumaTotalaAuto = this->sumaTotalaAuto - this->pretAsigurareAuto;
         this->pretAsigurareAuto = calculeazaPretAsigurareAuto();
+        this->sumaTotalaAuto = this->sumaTotalaAuto + this->pretAsigurareAuto;
         system("CLS");
     }
 
@@ -303,7 +310,7 @@ public:
 
 
     ~AsigurareAuto(){
-
+        this->sumaTotalaAuto = this->sumaTotalaAuto - this->pretAsigurareAuto;
     }
 };
 
@@ -317,6 +324,7 @@ private:
     float suprafataUtila;
     string adresa;
     float pretAsigurareLocuinta;
+    static float sumaTotalaLocuinta;
     
 public:
     AsigurareLocuinta(
@@ -331,6 +339,7 @@ public:
         this->suprafataUtila = suprafataUtila;
         this->adresa = adresa;
         this->pretAsigurareLocuinta = calculeazaPretAsigurareLocuinta();
+        this->sumaTotalaLocuinta = this->sumaTotalaLocuinta + this->pretAsigurareLocuinta;
     }
     AsigurareLocuinta():Asigurare() {
         this->anConstructie = 0;
@@ -352,19 +361,26 @@ public:
     float getPretAsigurareLocuinta() {
         return this->pretAsigurareLocuinta;
     }
+    float getSumaTotalaLocuinta() {
+        return this->sumaTotalaLocuinta;
+    }
 
     //Sett-eri
     void setAnConstructie(int anConstructieNou) {
         if (anConstructieNou > 0){
             this->anConstructie = anConstructieNou;
+            this->sumaTotalaLocuinta = this->sumaTotalaLocuinta - this->pretAsigurareLocuinta;
             this->pretAsigurareLocuinta = calculeazaPretAsigurareLocuinta();
+            this->sumaTotalaLocuinta = this->sumaTotalaLocuinta + this->pretAsigurareLocuinta;
         }
         else cerr << "Nu putem inregistra asigurarea pentru o cladire construita inainte de Hristos";
     }
     void setSuprafataUtila(float suprafataUtilaNoua) {
         if (suprafataUtilaNoua > 10){
-            this->pretAsigurareLocuinta = calculeazaPretAsigurareLocuinta();
             this->suprafataUtila = suprafataUtilaNoua;
+            this->sumaTotalaLocuinta = this->sumaTotalaLocuinta - this->pretAsigurareLocuinta;
+            this->pretAsigurareLocuinta = calculeazaPretAsigurareLocuinta();
+            this->sumaTotalaLocuinta = this->sumaTotalaLocuinta + this->pretAsigurareLocuinta;
         }
         else cerr << "Suprafata utila nu poate fi de " << suprafataUtilaNoua << " mp"<<endl;
     }
@@ -400,7 +416,9 @@ public:
         char adresa_temp[100];
         cout << " *" << "Dati Aderesa: "; getchar(); cin.get(adresa_temp, 100);
         this->adresa = adresa_temp;
+        this->sumaTotalaLocuinta = this->sumaTotalaLocuinta - this->pretAsigurareLocuinta;
         this->pretAsigurareLocuinta = calculeazaPretAsigurareLocuinta();
+        this->sumaTotalaLocuinta = this->sumaTotalaLocuinta + this->pretAsigurareLocuinta;
         system("CLS");
     }
 
@@ -445,7 +463,7 @@ public:
     }
 
     ~AsigurareLocuinta() {
-
+        this->sumaTotalaLocuinta = this->sumaTotalaLocuinta - this->pretAsigurareLocuinta;
     }
 };
 
@@ -546,7 +564,14 @@ public:
         }
     }
 
+    ~ListaAsigurari() {
+        delete[] this->asigurari;
+    }
+
 };
+
+float AsigurareAuto::sumaTotalaAuto = 0;
+float AsigurareLocuinta::sumaTotalaLocuinta = 0;
 
 
 
@@ -555,6 +580,8 @@ public:
         Asigurare* a1 = new AsigurareAuto("Marius", CompanieAsiguratorie::Groupama, 12, 2003, 6);
         Asigurare* a2 = new AsigurareLocuinta("Mihaela", CompanieAsiguratorie::GeneraliRomania, 24, 1980, 150, "florilor nr 23");
         Asigurare* a3 = new AsigurareAuto("David", CompanieAsiguratorie::AlianzTiriac, 23, 2013, 2.0);
+        AsigurareAuto autoturism;
+        AsigurareLocuinta locuinta;
         
        ListaAsigurari lista;
         lista += a1;
@@ -563,11 +590,23 @@ public:
 
  
 
-        lista.scriereAsigurareInFisierBinar();
-        lista.citireAngajatiDinFisierBinar();
+        //lista.scriereAsigurareInFisierBinar();
+        //lista.citireAngajatiDinFisierBinar();
 
 
         cout << lista;
 
+        cout << "______________________________________________________________________"<<endl;
+        cout << "|                   RAPORT FINAL ASIGURARI" << endl;
+        cout << "----------------------------------------------------------------------"<<endl;
+        cout << "| Suma totala incasa din asigurari auto: " << autoturism.getSumaTotalaAuto(); cout << endl;
+        cout << "| Suma totala incasa din asigurari auto: " << locuinta.getSumaTotalaLocuinta(); cout << endl;
+        cout << "----------------------------------------------------------------------";
+
+        delete a1;
+        delete a2;
+        delete a3;
+
+        return 0;
     }
 
